@@ -1,0 +1,6 @@
+# Para evitar que estos vayan al docker engine
+**/*
+
+# Con ! Permite determinadas excepciones
+!src
+!Dockerfile
