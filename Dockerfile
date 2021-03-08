@@ -12,6 +12,6 @@ RUN apk add  php
 ENTRYPOINT ["/usr/bin/php"]
 # añadimos los argumentos para ejecutar el comando anterior 
 # En openshift no podemos crear puertos menores de 1024
-CMD ["-f", " index.php", "-S",  "0.0.0.0:8080"]
+CMD ["-f", "index.php", "-S",  "0.0.0.0:8080"]
 
 
