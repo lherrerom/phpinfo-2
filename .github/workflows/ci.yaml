@@ -1,0 +1,20 @@
+name: CI
+on: 
+  push:
+    branches:
+    - docker
+jobs:
+  docker:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: test
+      run: |
+        docker build -t test .
+        docker run -d --name testcontainer test
+        while true
+          do \
+            sleep 10
+            docker exec testcontainer ps | grep 'php -f index.php' && break
+          done
