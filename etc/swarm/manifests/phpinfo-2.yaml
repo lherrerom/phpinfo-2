@@ -1,0 +1,38 @@
+networks:
+  phpinfo-2:
+    internal: true
+services:
+  phpinfo-2:
+    deploy:
+      # varios contenedores en la misma VM
+      mode: replicated
+      # Un unico contenedor por cada máquina virtual
+      #mode: global
+      placement: 
+        constraints:
+        - node.role == worker
+      replicas: 2
+      resources: 
+        limits:
+          cpus: "0.1"
+          memory: 100m
+        reservations:
+          cpus: "0.1"
+          memory: 100m
+      expose:
+      - 8080
+      healthcheck:
+        interval: 10s
+        retry: 3
+        start_period: 30s
+        # ALPINE no tiene instalado curl usamos otro comando php que es como el curl, podríamos instalarlo tambien
+        test: php -r "print file_get_contents('http://localhost:8080/');"
+        timeout: 1s
+      image: lherrerom/phpinfo-2:latest
+      networks: 
+      - phpinfo-2
+      ports: 
+      - 8080:8080
+version: "3.8"
+
+          
