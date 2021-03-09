@@ -22,11 +22,6 @@ jobs:
         while true
           do \
             sleep 10
-            docker logs testcontainer                                                   \
-              2>& 1                                                            \
-            |                                                                  \
-            grep "PHP .* Development Server started"                           \
-            &&                                                                 \
-            break        
+            docker logs testcontainer 2>& 1 | grep 'PHP .* Development Server .* started' && break
           done
             
