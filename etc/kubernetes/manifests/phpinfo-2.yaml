@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpinfo-2
+spec:
+  replicas: 2
+  selector:
+    # etiqueta que han de tener los pods que van a ser desplegados
+    matchLabel: 
+      app: php-info2
+  template:
+    metadata:
+      #No ponemos name para dejar al deployment que ponga nombre a los pods
+      labels:
+        app: phpinfo-2
+    spec:
+      containers:
+      - name: phpinfo-2
+        image: lherrerom/phpinfo-2:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          failureThreshold: 3
+          periodSeconds: 10
+          successThresHold: 1
+          timeoutSeconds: 1
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          failureThreshold: 3
+          periodSeconds: 10
+          successThresHold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100m
+          requests:
+            cpu: 100m
+            memory: 100m
+---
+#escrimos ahora la política de red, sería como un cortafuegos
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  # con la {} indicamos que se aplica a todos los pods, también se podrían omitir las llaves
+  #podSelector: {}
+  podSelector: 
+  policyTypes:
+  # Solo aplicamos esta política de entrada a los pods
+  - Ingress
+---
+# Regla menos restrictiva, permitimos que se acceda al puerto 8080 del pod phpinfo-2
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: phpinfo-2
+spec:
+  ingress:
+  - ports: 
+    - port: 8080
+  # con la {} indicamos que se aplica a todos los pods, también se podrían omitir las llaves
+  #podSelector: {}
+  podSelector: 
+    matchLabels:
+      app: phpinfo-2
+  policyTypes:
+  # Solo aplicamos esta política de entrada a los pods
+  - Ingress
+---
+#Creamos ahora un servicio (sirve para balancear la carga hacia los pods)
+apiVersion: v1
+kind: Service
+metadata:
+  name: phpinfo-2
+spec:
+  ports:
+  #Tenemos el puerto del pod y del balanceador. Este es el del balanceador
+  - port: 8080
+    # Puerto del pod
+    targetPort: 8080
+  selector: 
+    app: phpinfo-2
+  type: ClusterIP
+---
+
+
+
+
+        
+   
