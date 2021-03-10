@@ -28,7 +28,7 @@ services:
         # ALPINE no tiene instalado curl usamos otro comando php que es como el curl, podríamos instalarlo tambien
         #test: php -r "print file_get_contents('http://localhost:8080/');"
         test: wget -q --spider http://localhost:8080
-        timeout: 1s
+        timeout: 10s
       image: lherrerom/phpinfo-2:latest
       networks: 
       - phpinfo-2
