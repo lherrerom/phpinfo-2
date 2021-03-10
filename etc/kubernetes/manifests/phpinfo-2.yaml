@@ -15,7 +15,7 @@ spec:
     spec:
       containers: 
       - name: phpinfo-2
-        image: terferre/phpinfo-2:latest
+        image: lherrerom/phpinfo-2:latest
         imagePullPolicy: Always
         livenessProbe:
           tcpSocket: 
