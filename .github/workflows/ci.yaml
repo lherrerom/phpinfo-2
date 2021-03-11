@@ -70,7 +70,7 @@ jobs:
         #creo imagen image
         docker build -t terferre/phpinfo-2:testing .
         #instalo Kubernetes en una máquina Ubuntu
-        sudo apt-get update
+        sudo apt-get update -y
         sudo apt-get install -y docker.io
         sudo systemctl enable --now docker
         curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
