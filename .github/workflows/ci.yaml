@@ -24,4 +24,39 @@ jobs:
             sleep 10
             docker logs testcontainer 2>& 1 | grep 'PHP .* Development Server .* started' && break
           done
+  swarm:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: test
+      run: |
+        set -x
+        docker build -t lherrerom/phpinfo-2:testing .
+        docker warm init
+        #Creamos una variable
+        project=phpinfo-2        
+        compose=etc/swarm/manifests/${project}.yaml
+        #Va al archivo yaml y cambia el tag latest por testing para probar la imagen que acabamos de crear 
+        sed -i /image:/s/latest/testing/ ${compose}
+        sed -i /node.role/s/worker/manager/ ${compose}
+        #desplegar en Openshift
+        #oc apply -f ${compose}
+        #Despliegue en Kubernetes
+        #kubectl apply -f ${compose}
+        #Despliegue en Swarm en el namespace phpinfo-2
+        docker stack deploy -c ${compose} ${project}
+        while true
+          do \
+            sleep 10
+            # Los paréntesis han de llevar contrabara delante porque sino no funcionan con greep
+            #\1 es o que hay dentro de los paréntesis, como en dockerhub
+            docker service ls | grep "${project}.*\([0-9]\)/\1" && break
+          done
+        while true
+          do \
+            sleep 10
+            # El nombre del servicio es NombreProyecto_nombreAplicacion
+            docker service logs ${project}_${project} 2>& 1 | grep 'PHP .* Development Server .* started' && break
+          done
             
